@@ -2,6 +2,9 @@ import { useApp } from '../../context/AppContext'
 import { seasonalTypes } from '../../data/seasonalTypes'
 import { clothingRecommendations } from '../../data/clothingRecommendations'
 import ClothingCard from '../results/ClothingCard'
+import CapsuleWardrobe from '../results/CapsuleWardrobe'
+import OutfitMoodBoard from '../results/OutfitMoodBoard'
+import ShareButton from '../share/ShareButton'
 
 export default function RecommendationsScreen() {
   const { state, dispatch } = useApp()
@@ -29,57 +32,78 @@ export default function RecommendationsScreen() {
     <div className="flex-1 px-5 py-4 max-w-md mx-auto w-full space-y-4 pb-24">
       {/* Header */}
       <div className="text-center animate-fade-in">
-        <span className="text-3xl mb-2 block">{seasonData.emoji}</span>
-        <h2 className="text-xl font-bold text-white mb-1">
-          Style Guide for {seasonData.name}
+        <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${seasonData.gradient} bg-opacity-10`}
+          style={{ background: `linear-gradient(to right, ${seasonData.accentColor}15, ${seasonData.accentColor}08)` }}
+        >
+          <span className="text-xl">{seasonData.emoji}</span>
+          <span className="text-sm font-semibold text-white">{seasonData.name}</span>
+        </div>
+        <h2 className="text-xl font-bold text-white mt-3 mb-1">
+          Your Complete Style Guide
         </h2>
-        <p className="text-white/50 text-sm">
-          Clothing recommendations tailored to your color season
+        <p className="text-white/40 text-xs">
+          Everything you need to dress in your best colors
         </p>
       </div>
 
-      {/* Clothing categories */}
-      {['tops', 'bottoms', 'outerwear', 'accessories'].map((category, i) => (
-        <div key={category} className="animate-slide-up" style={{ animationDelay: `${i * 0.1}s` }}>
-          <ClothingCard category={category} data={recs[category]} />
-        </div>
-      ))}
+      {/* Outfit mood boards by occasion */}
+      <OutfitMoodBoard recs={recs} seasonData={seasonData} />
 
-      {/* Fabrics */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 animate-slide-up" style={{ animationDelay: '0.4s' }}>
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-lg">🧵</span>
-          <h4 className="text-sm font-semibold text-white">Best Fabrics</h4>
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          {recs.fabrics.map((fabric, i) => (
-            <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-white/10 text-white/70">
-              {fabric}
-            </span>
+      {/* Capsule wardrobe */}
+      <CapsuleWardrobe subSeason={subSeason} />
+
+      {/* Clothing categories - collapsible */}
+      <div>
+        <h3 className="text-xs font-medium text-white/40 uppercase tracking-wider mb-3 px-1">
+          Detailed Recommendations
+        </h3>
+        <div className="space-y-2">
+          {['tops', 'bottoms', 'outerwear', 'accessories'].map((category, i) => (
+            <div key={category} className="animate-slide-up" style={{ animationDelay: `${i * 0.1}s` }}>
+              <ClothingCard category={category} data={recs[category]} />
+            </div>
           ))}
         </div>
       </div>
 
-      {/* Patterns */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 animate-slide-up" style={{ animationDelay: '0.5s' }}>
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-lg">🎨</span>
-          <h4 className="text-sm font-semibold text-white">Best Patterns</h4>
+      {/* Fabrics & Patterns */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 animate-slide-up">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-sm">🧵</span>
+            <h4 className="text-xs font-semibold text-white/70">Best Fabrics</h4>
+          </div>
+          <div className="space-y-1.5">
+            {recs.fabrics.map((fabric, i) => (
+              <span key={i} className="block text-xs text-white/50 bg-white/5 rounded-lg px-2.5 py-1.5">
+                {fabric}
+              </span>
+            ))}
+          </div>
         </div>
-        <div className="flex flex-wrap gap-1.5">
-          {recs.patterns.map((pattern, i) => (
-            <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-300/80">
-              {pattern}
-            </span>
-          ))}
+
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 animate-slide-up">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-sm">🎨</span>
+            <h4 className="text-xs font-semibold text-white/70">Best Patterns</h4>
+          </div>
+          <div className="space-y-1.5">
+            {recs.patterns.map((pattern, i) => (
+              <span key={i} className="block text-xs text-white/50 bg-purple-500/5 rounded-lg px-2.5 py-1.5">
+                {pattern}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Start over */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f0f1a] via-[#0f0f1a] to-transparent">
+      {/* Share + Start Over */}
+      <div className="space-y-3 pt-2">
+        <ShareButton seasonData={seasonData} detectedColors={state.detectedColors} />
+
         <button
           onClick={() => dispatch({ type: 'RESET' })}
-          className="w-full max-w-md mx-auto block py-4 rounded-2xl bg-white/10 border border-white/20 text-white font-semibold text-base active:scale-[0.98] transition-all"
+          className="w-full py-3.5 rounded-xl bg-white/5 border border-white/10 text-white/60 text-sm font-medium active:scale-[0.98] transition-all"
         >
           Start Over
         </button>

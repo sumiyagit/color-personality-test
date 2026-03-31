@@ -1,21 +1,64 @@
 export default function SeasonCard({ seasonData }) {
+  if (!seasonData) return null
+
   return (
-    <div className="bg-white/5 border border-white/10 rounded-3xl p-6 animate-slide-up">
-      <div className="text-center mb-4">
-        <span className="text-5xl mb-3 block">{seasonData.emoji}</span>
-        <h2 className="text-2xl font-bold text-white mb-1">{seasonData.name}</h2>
-        <p className="text-purple-400 text-sm font-medium">{seasonData.subtitle}</p>
-      </div>
+    <div className="relative overflow-hidden rounded-2xl border border-white/10 animate-fade-in">
+      {/* Gradient background */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${seasonData.gradient} opacity-15`} />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30" />
 
-      <p className="text-white/60 text-sm leading-relaxed text-center mb-4">
-        {seasonData.description}
-      </p>
+      <div className="relative p-5">
+        {/* Emoji and name */}
+        <div className="text-center mb-3">
+          <span className="text-5xl block mb-2">{seasonData.emoji}</span>
+          <h2 className="text-2xl font-bold text-white tracking-tight">
+            {seasonData.name}
+          </h2>
+          <p className="text-white/50 text-sm font-medium mt-0.5">
+            {seasonData.subtitle}
+          </p>
+        </div>
 
-      <div className="bg-white/5 rounded-2xl p-4">
-        <h4 className="text-xs font-medium text-white/40 uppercase tracking-wider mb-2">Personality</h4>
-        <p className="text-white/70 text-sm leading-relaxed">
-          {seasonData.personality}
+        {/* Style keywords */}
+        {seasonData.styleKeywords && (
+          <div className="flex justify-center gap-1.5 mb-3 flex-wrap">
+            {seasonData.styleKeywords.map((keyword, i) => (
+              <span
+                key={i}
+                className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/50 font-medium"
+              >
+                {keyword}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Description */}
+        <p className="text-white/60 text-sm leading-relaxed text-center mb-3">
+          {seasonData.description}
         </p>
+
+        {/* Personality */}
+        <div className="bg-white/5 rounded-xl p-3">
+          <p className="text-xs text-white/30 uppercase tracking-wider font-medium mb-1">
+            Personality
+          </p>
+          <p className="text-white/50 text-xs leading-relaxed">
+            {seasonData.personality}
+          </p>
+        </div>
+
+        {/* Celebrity matches */}
+        {seasonData.celebrities && (
+          <div className="mt-3 text-center">
+            <p className="text-[10px] text-white/30 uppercase tracking-wider font-medium mb-1">
+              Celebrity Matches
+            </p>
+            <p className="text-white/50 text-xs">
+              {seasonData.celebrities.join('  ·  ')}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )

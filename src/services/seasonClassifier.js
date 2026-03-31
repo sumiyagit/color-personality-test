@@ -56,6 +56,9 @@ export function classifySeason(detectedColors) {
   const overallContrast = getContrastRatio(skin, hair)
   const overallSaturation = (getSaturation(skin) + getSaturation(eyes) + getSaturation(hair)) / 3
 
+  // Step 7: Compute chroma (overall color clarity/saturation)
+  const chromaScore = overallSaturation
+
   return {
     season,
     scores: {
@@ -69,19 +72,51 @@ export function classifySeason(detectedColors) {
       depth: depthScore,
       contrast: overallContrast,
       saturation: overallSaturation,
+      chroma: chromaScore,
+    },
+    // Dimension data for methodology display
+    dimensions: {
+      undertone: {
+        value: warmthScore,
+        min: -1,
+        max: 1,
+        labelLeft: 'Cool',
+        labelRight: 'Warm',
+        description: warmthScore >= 0
+          ? 'Your skin has warm undertones with golden/peachy hues.'
+          : 'Your skin has cool undertones with pink/blue hues.',
+      },
+      depth: {
+        value: depthScore,
+        min: 0,
+        max: 1,
+        labelLeft: 'Deep',
+        labelRight: 'Light',
+        description: depthScore >= 0.5
+          ? 'Your overall coloring is light — features are bright and luminous.'
+          : 'Your overall coloring is deep — features are rich and dramatic.',
+      },
+      chroma: {
+        value: chromaScore,
+        min: 0,
+        max: 1,
+        labelLeft: 'Muted',
+        labelRight: 'Bright',
+        description: chromaScore >= 0.4
+          ? 'Your colors are clear and vivid — you can wear bold, saturated tones.'
+          : 'Your colors are soft and muted — you shine in toned-down, blended shades.',
+      },
     },
   }
 }
 
 export function determineSubSeason(season, quizAnswers) {
-  // Count votes for each sub-season from quiz answers
   const votes = {}
   for (const answer of quizAnswers) {
     const sub = answer.subSeason
     votes[sub] = (votes[sub] || 0) + answer.score
   }
 
-  // Find the sub-season with highest score
   let best = null
   let bestScore = -1
   for (const [sub, score] of Object.entries(votes)) {

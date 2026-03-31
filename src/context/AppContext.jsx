@@ -1,6 +1,31 @@
-import { createContext, useContext, useReducer } from 'react'
+import { createContext, useContext, useReducer, useEffect } from 'react'
 
 const AppContext = createContext()
+
+const STORAGE_KEY = 'color-personality-result'
+
+function loadSavedResult() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved) return JSON.parse(saved)
+  } catch {}
+  return null
+}
+
+function saveResult(state) {
+  try {
+    if (state.subSeasonResult && state.detectedColors?.skin) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        subSeasonResult: state.subSeasonResult,
+        seasonResult: state.seasonResult,
+        analysisScores: state.analysisScores,
+        detectedColors: state.detectedColors,
+        isAnalyzing: state.isAnalyzing,
+        capturedImage: state.capturedImage,
+      }))
+    }
+  } catch {}
+}
 
 const initialState = {
   currentStep: 0,
@@ -43,7 +68,10 @@ function appReducer(state, action) {
       return { ...state, isAnalyzing: action.payload }
     case 'SET_MODELS_LOADED':
       return { ...state, modelsLoaded: action.payload }
+    case 'LOAD_SAVED':
+      return { ...state, ...action.payload, currentStep: 4 }
     case 'RESET':
+      try { localStorage.removeItem(STORAGE_KEY) } catch {}
       return { ...initialState }
     default:
       return state
@@ -52,6 +80,14 @@ function appReducer(state, action) {
 
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(appReducer, initialState)
+
+  // Save results when they change
+  useEffect(() => {
+    if (state.subSeasonResult) {
+      saveResult(state)
+    }
+  }, [state.subSeasonResult, state.detectedColors])
+
   return (
     <AppContext.Provider value={{ state, dispatch }}>
       {children}

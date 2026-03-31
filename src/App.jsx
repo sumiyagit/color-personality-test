@@ -17,6 +17,8 @@ const STEPS = [
   RecommendationsScreen,
 ]
 
+const STEP_LABELS = ['Welcome', 'Selfie', 'Analysis', 'Quiz', 'Results', 'Style Guide']
+
 function AppContent() {
   const { state } = useApp()
   const StepComponent = STEPS[state.currentStep]
@@ -25,10 +27,14 @@ function AppContent() {
     <div className="min-h-dvh flex flex-col bg-gradient-to-br from-[#0f0f1a] via-[#1a1025] to-[#0f0f1a]">
       <Header />
       {state.currentStep > 0 && state.currentStep < 5 && (
-        <StepIndicator current={state.currentStep} total={5} />
+        <StepIndicator
+          current={state.currentStep}
+          total={5}
+          labels={STEP_LABELS}
+        />
       )}
-      <main className="flex-1 flex flex-col">
-        <StepComponent />
+      <main className="flex-1 flex flex-col animate-page-enter">
+        <StepComponent key={state.currentStep} />
       </main>
     </div>
   )

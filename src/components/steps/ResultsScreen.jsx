@@ -1,13 +1,28 @@
+import { useState, useEffect } from 'react'
 import { useApp } from '../../context/AppContext'
 import { seasonalTypes } from '../../data/seasonalTypes'
 import SeasonCard from '../results/SeasonCard'
 import DetectedColors from '../results/DetectedColors'
 import ColorPalette from '../results/ColorPalette'
+import AnalysisBreakdown from '../results/AnalysisBreakdown'
+import BeautyGuide from '../results/BeautyGuide'
+import HairColorGuide from '../results/HairColorGuide'
+import DrapeComparison from '../draping/DrapeComparison'
+import ShareButton from '../share/ShareButton'
+import Confetti from '../effects/Confetti'
 
 export default function ResultsScreen() {
   const { state, dispatch } = useApp()
   const subSeason = state.subSeasonResult
   const seasonData = seasonalTypes[subSeason]
+  const [showConfetti, setShowConfetti] = useState(true)
+
+  useEffect(() => {
+    // Haptic feedback on reveal
+    if (navigator.vibrate) navigator.vibrate([100, 50, 100])
+    const timer = setTimeout(() => setShowConfetti(false), 3500)
+    return () => clearTimeout(timer)
+  }, [])
 
   if (!seasonData) {
     return (
@@ -26,8 +41,11 @@ export default function ResultsScreen() {
   }
 
   return (
-    <div className="flex-1 px-5 py-4 max-w-md mx-auto w-full space-y-4 pb-24">
-      {/* Season scores */}
+    <div className="flex-1 px-5 py-4 max-w-md mx-auto w-full space-y-4 pb-28">
+      {/* Confetti burst */}
+      {showConfetti && <Confetti colors={seasonData.palette.best.slice(0, 6)} />}
+
+      {/* Season scores bar chart */}
       {state.analysisScores && (
         <div className="bg-white/5 border border-white/10 rounded-2xl p-4 animate-fade-in">
           <h4 className="text-xs font-medium text-white/40 uppercase tracking-wider mb-3">Season Match</h4>
@@ -37,38 +55,76 @@ export default function ResultsScreen() {
               .map(([season, score]) => (
                 <div key={season} className="flex items-center gap-3">
                   <span className="text-xs text-white/50 w-16 capitalize">{season}</span>
-                  <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div className="flex-1 h-2.5 bg-white/5 rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-1000 ease-out"
                       style={{
                         width: `${score}%`,
                         background: season === state.seasonResult
-                          ? 'linear-gradient(to right, #a855f7, #ec4899)'
-                          : 'rgba(255,255,255,0.2)',
+                          ? `linear-gradient(to right, ${seasonData.accentColor || '#a855f7'}, #ec4899)`
+                          : 'rgba(255,255,255,0.15)',
                       }}
                     />
                   </div>
-                  <span className="text-xs text-white/40 w-8 text-right">{score}%</span>
+                  <span className="text-xs text-white/40 w-8 text-right font-mono">{score}%</span>
                 </div>
               ))}
           </div>
         </div>
       )}
 
-      {/* Season card */}
+      {/* Season card (hero) */}
       <SeasonCard seasonData={seasonData} />
+
+      {/* Analysis methodology breakdown */}
+      {state.isAnalyzing && (
+        <AnalysisBreakdown dimensions={state.isAnalyzing} />
+      )}
 
       {/* Detected colors */}
       <DetectedColors colors={state.detectedColors} />
 
-      {/* Best palette */}
-      <ColorPalette colors={seasonData.palette.best} title="Your Best Colors" />
+      {/* Virtual draping */}
+      {state.capturedImage && (
+        <DrapeComparison
+          imageSrc={state.capturedImage}
+          bestColors={seasonData.palette.best}
+          avoidColors={seasonData.palette.avoid}
+          landmarks={null}
+        />
+      )}
+
+      {/* Best palette - interactive */}
+      <ColorPalette
+        colors={seasonData.palette.best}
+        colorNames={seasonData.colorNames?.best}
+        title="Your Best Colors"
+        variant="best"
+      />
+
+      {/* Neutral colors */}
+      <ColorPalette
+        colors={seasonData.palette.neutral}
+        colorNames={seasonData.colorNames?.neutral}
+        title="Your Neutrals"
+        variant="best"
+      />
 
       {/* Colors to avoid */}
-      <ColorPalette colors={seasonData.palette.avoid} title="Colors to Avoid" />
+      <ColorPalette
+        colors={seasonData.palette.avoid}
+        title="Colors to Avoid"
+        variant="avoid"
+      />
+
+      {/* Beauty & Makeup guide */}
+      <BeautyGuide beauty={seasonData.beauty} />
+
+      {/* Hair color guide */}
+      <HairColorGuide hairColors={seasonData.hairColors} />
 
       {/* Characteristics */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 animate-slide-up" style={{ animationDelay: '0.3s' }}>
+      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 animate-slide-up">
         <h4 className="text-xs font-medium text-white/40 uppercase tracking-wider mb-3">Your Characteristics</h4>
         <div className="space-y-2">
           {Object.entries(seasonData.characteristics).map(([key, value]) => (
@@ -82,15 +138,10 @@ export default function ResultsScreen() {
         </div>
       </div>
 
-      {/* Celebrity matches */}
-      {seasonData.celebrities && (
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 animate-slide-up" style={{ animationDelay: '0.4s' }}>
-          <h4 className="text-xs font-medium text-white/40 uppercase tracking-wider mb-3">Celebrity Matches</h4>
-          <p className="text-white/60 text-sm">{seasonData.celebrities.join(', ')}</p>
-        </div>
-      )}
+      {/* Share button */}
+      <ShareButton seasonData={seasonData} detectedColors={state.detectedColors} />
 
-      {/* CTA */}
+      {/* CTA - Clothing recommendations */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f0f1a] via-[#0f0f1a] to-transparent">
         <button
           onClick={() => dispatch({ type: 'SET_STEP', payload: 5 })}

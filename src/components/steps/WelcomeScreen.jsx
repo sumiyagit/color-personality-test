@@ -1,70 +1,92 @@
 import { useApp } from '../../context/AppContext'
+import ParticleBackground from '../effects/ParticleBackground'
 
 export default function WelcomeScreen() {
   const { dispatch } = useApp()
   const hasCamera = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
+    <div className="flex-1 flex flex-col items-center justify-center px-6 py-8 relative overflow-hidden">
+      {/* Particle background */}
+      <ParticleBackground />
+
       {/* Hero */}
-      <div className="animate-fade-in mb-8">
-        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center animate-pulse-glow">
-          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-            <circle cx="24" cy="24" r="18" stroke="white" strokeWidth="2" fill="none" />
-            <circle cx="24" cy="20" r="7" stroke="white" strokeWidth="2" fill="none" />
-            <path d="M12 40c0-6.627 5.373-12 12-12s12 5.373 12 12" stroke="white" strokeWidth="2" fill="none" />
+      <div className="relative z-10 animate-fade-in mb-6">
+        <div className="w-28 h-28 mx-auto mb-6 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center animate-pulse-glow shadow-2xl">
+          <svg width="52" height="52" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="18" stroke="white" strokeWidth="1.5" fill="none" opacity="0.6" />
+            <circle cx="24" cy="20" r="7" stroke="white" strokeWidth="1.5" fill="none" />
+            <path d="M12 40c0-6.627 5.373-12 12-12s12 5.373 12 12" stroke="white" strokeWidth="1.5" fill="none" />
+            {/* Color dots around the face */}
+            <circle cx="10" cy="12" r="2.5" fill="#FF7F50" opacity="0.8" />
+            <circle cx="38" cy="12" r="2.5" fill="#87CEEB" opacity="0.8" />
+            <circle cx="6" cy="28" r="2" fill="#98FB98" opacity="0.8" />
+            <circle cx="42" cy="28" r="2" fill="#DDA0DD" opacity="0.8" />
           </svg>
         </div>
 
-        <h2 className="text-3xl font-bold text-white mb-3 tracking-tight">
-          Discover Your Colors
-        </h2>
-        <p className="text-white/60 text-base max-w-xs mx-auto leading-relaxed">
-          Find your seasonal color type and get personalized style recommendations
+        <h1 className="text-4xl font-extrabold text-white mb-2 tracking-tight text-center">
+          Discover Your
+          <br />
+          <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
+            Color Season
+          </span>
+        </h1>
+        <p className="text-white/50 text-sm max-w-xs mx-auto leading-relaxed text-center">
+          AI-powered seasonal color analysis with personalized style, beauty &amp; makeup recommendations
         </p>
       </div>
 
-      {/* Season icons */}
-      <div className="grid grid-cols-4 gap-3 mb-10 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+      {/* Season preview cards */}
+      <div className="relative z-10 grid grid-cols-4 gap-2.5 mb-8 animate-slide-up" style={{ animationDelay: '0.2s' }}>
         {[
-          { name: 'Spring', color: 'from-green-400 to-yellow-300', emoji: '🌸' },
-          { name: 'Summer', color: 'from-sky-400 to-blue-300', emoji: '☀️' },
-          { name: 'Autumn', color: 'from-orange-500 to-amber-400', emoji: '🍂' },
-          { name: 'Winter', color: 'from-indigo-500 to-purple-400', emoji: '❄️' },
+          { name: 'Spring', colors: ['#FFD700', '#FF7F50', '#98FB98'], emoji: '🌸' },
+          { name: 'Summer', colors: ['#B0C4DE', '#DDA0DD', '#87CEEB'], emoji: '☀️' },
+          { name: 'Autumn', colors: ['#D2691E', '#CD853F', '#556B2F'], emoji: '🍂' },
+          { name: 'Winter', colors: ['#4169E1', '#FF0000', '#FFFFFF'], emoji: '❄️' },
         ].map(season => (
           <div key={season.name} className="flex flex-col items-center gap-1.5">
-            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${season.color} flex items-center justify-center text-2xl shadow-lg`}>
-              {season.emoji}
+            <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center justify-center gap-1 p-1.5 backdrop-blur-sm">
+              <span className="text-lg">{season.emoji}</span>
+              <div className="flex gap-0.5">
+                {season.colors.map((c, i) => (
+                  <div key={i} className="w-3 h-3 rounded-full" style={{ backgroundColor: c }} />
+                ))}
+              </div>
             </div>
-            <span className="text-xs text-white/40">{season.name}</span>
+            <span className="text-[10px] text-white/30 font-medium">{season.name}</span>
           </div>
         ))}
       </div>
 
-      {/* How it works */}
-      <div className="w-full max-w-sm mb-8 animate-slide-up" style={{ animationDelay: '0.4s' }}>
-        <div className="space-y-3">
+      {/* What you get */}
+      <div className="relative z-10 w-full max-w-sm mb-6 animate-slide-up" style={{ animationDelay: '0.3s' }}>
+        <div className="space-y-2">
           {[
-            { step: '1', text: 'Take a selfie', icon: '📷' },
-            { step: '2', text: 'We analyze your colors', icon: '🎨' },
-            { step: '3', text: 'Get your style guide', icon: '✨' },
-          ].map(item => (
-            <div key={item.step} className="flex items-center gap-3 bg-white/5 rounded-xl px-4 py-3">
-              <span className="text-xl">{item.icon}</span>
-              <span className="text-white/70 text-sm">{item.text}</span>
+            { icon: '📷', text: 'Take a selfie for AI face analysis', sub: 'Detects skin, eye & hair colors' },
+            { icon: '🎨', text: 'Get your color season & sub-season', sub: '12 unique seasonal types' },
+            { icon: '💄', text: 'Makeup, hair & clothing guide', sub: 'Personalized beauty recommendations' },
+            { icon: '📱', text: 'Share your results', sub: 'Beautiful social share cards' },
+          ].map((item, i) => (
+            <div key={i} className="flex items-start gap-3 bg-white/[0.03] rounded-xl px-4 py-3 border border-white/5">
+              <span className="text-lg mt-0.5">{item.icon}</span>
+              <div>
+                <span className="text-white/70 text-sm block">{item.text}</span>
+                <span className="text-white/30 text-xs">{item.sub}</span>
+              </div>
             </div>
           ))}
         </div>
       </div>
 
       {/* CTA */}
-      <div className="w-full max-w-sm animate-slide-up" style={{ animationDelay: '0.6s' }}>
+      <div className="relative z-10 w-full max-w-sm animate-slide-up" style={{ animationDelay: '0.5s' }}>
         {hasCamera ? (
           <button
             onClick={() => dispatch({ type: 'SET_STEP', payload: 1 })}
             className="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold text-lg shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 active:scale-[0.98] transition-all"
           >
-            Start Analysis
+            Start My Analysis
           </button>
         ) : (
           <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 text-center">
@@ -73,11 +95,15 @@ export default function WelcomeScreen() {
             </p>
           </div>
         )}
+
+        <p className="text-white/20 text-[10px] mt-3 text-center">
+          Free &bull; No signup required &bull; All processing happens on your device
+        </p>
       </div>
 
       {/* Tips */}
-      <p className="text-white/30 text-xs mt-4 text-center max-w-xs">
-        For best results: face a window, remove sunglasses, and keep your face centered
+      <p className="relative z-10 text-white/20 text-xs mt-4 text-center max-w-xs">
+        Tip: Face a window for best lighting. Remove sunglasses and keep your face centered.
       </p>
     </div>
   )
