@@ -6,7 +6,7 @@ const App = (() => {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
     const step = document.getElementById(stepId);
     step.classList.add('active');
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
   async function analyzePhoto() {
