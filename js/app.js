@@ -1,6 +1,7 @@
 // Main App Controller
 const App = (() => {
   let currentResult = null;
+  let currentPhotoUrl = null;
 
   function goToStep(stepId) {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
@@ -12,18 +13,20 @@ const App = (() => {
   async function analyzePhoto() {
     const photoUrl = Camera.getPhotoDataUrl();
     if (!photoUrl) return;
+    currentPhotoUrl = photoUrl;
 
     Camera.stopStream();
     goToStep('step-analyzing');
 
     const statusEl = document.getElementById('analyzing-status');
     const messages = [
-      'Detecting skin tone...',
-      'Analyzing undertones...',
-      'Matching color season...',
-      'Preparing your results...'
+      t('status1'),
+      t('status2'),
+      t('status3'),
+      t('status4')
     ];
 
+    statusEl.textContent = messages[0];
     let msgIndex = 0;
     const msgInterval = setInterval(() => {
       msgIndex++;
@@ -36,7 +39,6 @@ const App = (() => {
       const result = await Analyzer.analyze(photoUrl);
       currentResult = result;
 
-      // Wait a bit for the animation to feel natural
       await new Promise(r => setTimeout(r, 2400));
       clearInterval(msgInterval);
 
@@ -45,20 +47,22 @@ const App = (() => {
     } catch (err) {
       clearInterval(msgInterval);
       console.error('Analysis error:', err);
-      alert('Something went wrong analyzing your photo. Please try again.');
+      alert('Something went wrong. Please try again.');
       goToStep('step-capture');
     }
   }
 
   function renderResults(result, userPhotoUrl) {
     const s = result.season;
+    const key = result.key;
+    const seasonName = tSeason(key, 'name');
+    const seasonSubtitle = tSeason(key, 'subtitle');
 
     // Hero
     document.getElementById('result-emoji').textContent = s.emoji;
-    document.getElementById('result-name').textContent = s.name;
-    document.getElementById('result-subtitle').textContent = s.subtitle;
+    document.getElementById('result-name').textContent = seasonName;
+    document.getElementById('result-subtitle').textContent = seasonSubtitle;
 
-    // Set result background theme
     const hero = document.getElementById('result-hero');
     const theme = SEASON_THEMES[s.season];
     hero.style.background = theme.gradient;
@@ -69,14 +73,26 @@ const App = (() => {
     // Faces
     document.getElementById('result-user-photo').src = userPhotoUrl;
     document.getElementById('result-type-photo').src = s.faceImage;
-    document.getElementById('result-type-label').textContent = s.name;
+    document.getElementById('result-type-label').textContent = seasonName;
 
     // Description
-    document.getElementById('result-description').textContent = s.description;
+    document.getElementById('result-description').textContent = tDescription(key);
 
     // Personality
     const personalityList = document.getElementById('result-personality');
-    personalityList.innerHTML = s.personality.map(p => `<li>${p}</li>`).join('');
+    const traits = tPersonality(key);
+    personalityList.innerHTML = traits.map(p => `<li>${p}</li>`).join('');
+
+    // Section headings
+    const headings = document.querySelectorAll('#step-results .result-card h3');
+    headings.forEach(h3 => {
+      const text = h3.textContent;
+      if (text.includes('Personality') || text.includes('зан чанар')) h3.textContent = t('yourPersonality');
+      else if (text.includes('Best Colors') || text.includes('шилдэг өнгө')) h3.textContent = t('yourBestColors');
+      else if (text.includes('Avoid') || text.includes('Зайлсхийх')) h3.textContent = t('colorsToAvoid');
+      else if (text.includes('Clothing') || text.includes('хувцас')) h3.textContent = t('clothingForYou');
+      else if (text.includes('Accessories') || text.includes('чимэглэл')) h3.textContent = t('accessoriesForYou');
+    });
 
     // Best colors
     const colorsDiv = document.getElementById('result-colors');
@@ -90,22 +106,46 @@ const App = (() => {
       `<div class="color-swatch" style="background:${c}" title="${c}"></div>`
     ).join('');
 
-    // Clothing name label
-    document.getElementById('clothing-season-name').textContent = s.name;
+    // Clothing intro
+    document.getElementById('clothing-season-name').textContent = seasonName;
+    const clothingIntroEl = document.querySelector('#result-clothing').closest('.result-card').querySelector('.rec-intro');
+    if (clothingIntroEl) {
+      clothingIntroEl.innerHTML = t('clothingIntro').replace('{season}', `<span id="clothing-season-name">${seasonName}</span>`);
+    }
+
+    // Accessories intro
+    const accIntroEl = document.querySelector('#result-accessories').closest('.result-card').querySelector('.rec-intro');
+    if (accIntroEl) {
+      accIntroEl.textContent = t('accessoriesIntro');
+    }
 
     // Clothing recommendations
     const clothingDiv = document.getElementById('result-clothing');
-    clothingDiv.innerHTML = s.clothing.map(item => createRecCard(item, s.faceImage, s.name)).join('');
+    clothingDiv.innerHTML = s.clothing.map(item => createRecCard(item, s.faceImage, seasonName, key)).join('');
 
     // Accessories
     const accessDiv = document.getElementById('result-accessories');
-    accessDiv.innerHTML = s.accessories.map(item => createRecCard(item, s.faceImage, s.name)).join('');
+    accessDiv.innerHTML = s.accessories.map(item => createRecCard(item, s.faceImage, seasonName, key)).join('');
+
+    // You label
+    document.querySelector('#result-faces .face-card span').textContent = t('you');
+
+    // Try again button
+    const tryBtn = document.querySelector('.result-footer .btn-primary');
+    if (tryBtn) {
+      const svgEl = tryBtn.querySelector('svg');
+      tryBtn.innerHTML = '';
+      if (svgEl) tryBtn.appendChild(svgEl);
+      tryBtn.appendChild(document.createTextNode(' ' + t('tryAgain')));
+    }
   }
 
-  function createRecCard(item, faceImage, seasonName) {
+  function createRecCard(item, faceImage, seasonName, seasonKey) {
     const colorsHtml = item.colors
       ? item.colors.map(c => `<span class="rec-color-tag">${c}</span>`).join('')
       : '';
+
+    const looksGreatText = t('looksGreatOn').replace('{season}', seasonName);
 
     return `
       <div class="rec-item">
@@ -117,7 +157,7 @@ const App = (() => {
           ${colorsHtml ? `<div class="rec-colors">${colorsHtml}</div>` : ''}
           <div class="rec-face-ref">
             <img src="${faceImage}" alt="${seasonName}" loading="lazy">
-            <span>Looks great on ${seasonName} types</span>
+            <span>${looksGreatText}</span>
           </div>
         </div>
       </div>
@@ -127,8 +167,16 @@ const App = (() => {
   function restart() {
     Camera.retake();
     currentResult = null;
+    currentPhotoUrl = null;
     goToStep('step-welcome');
   }
 
-  return { goToStep, analyzePhoto, restart };
+  // Re-render results when language changes
+  function reRenderIfNeeded() {
+    if (currentResult && currentPhotoUrl) {
+      renderResults(currentResult, currentPhotoUrl);
+    }
+  }
+
+  return { goToStep, analyzePhoto, restart, reRenderIfNeeded };
 })();

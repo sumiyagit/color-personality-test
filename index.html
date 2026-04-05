@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -13,6 +13,12 @@
 </head>
 <body>
   <div id="app">
+
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+      <button class="lang-btn active" data-lang="mn" onclick="setLanguage('mn')">MN</button>
+      <button class="lang-btn" data-lang="en" onclick="setLanguage('en')">EN</button>
+    </div>
 
     <!-- Step 1: Welcome -->
     <section id="step-welcome" class="step active">
@@ -195,6 +201,7 @@
   </div>
 
   <script src="js/data.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/camera.js"></script>
   <script src="js/analyzer.js"></script>
   <script src="js/app.js"></script>
