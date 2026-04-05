@@ -129,13 +129,13 @@ const App = (() => {
     document.getElementById('confirm-skin-detected').textContent =
       t('confirmDetected').replace('{value}', t('skin' + guessed.skinUndertone.charAt(0).toUpperCase() + guessed.skinUndertone.slice(1)));
 
-    // Store initial selections
+    // Store initial selections — gender and style must be chosen by user
     confirmedFeatures = {
       eyeColor: guessed.eyeColor,
       hairColor: guessed.hairColor,
       skinUndertone: guessed.skinUndertone,
-      gender: 'female',
-      style: 'casual'
+      gender: null,
+      style: null
     };
   }
 
@@ -166,10 +166,9 @@ const App = (() => {
   function renderGenderOptions(containerId, options) {
     const container = document.getElementById(containerId);
     container.innerHTML = options.map(opt => {
-      const isSelected = opt.key === 'female' ? ' selected' : '';
       const label = t('gender' + opt.key.charAt(0).toUpperCase() + opt.key.slice(1));
       const icon = opt.key === 'female' ? '👩' : '👨';
-      return `<button class="confirm-option${isSelected}" data-group="gender" data-value="${opt.key}" onclick="App.selectOption(this, 'gender')">
+      return `<button class="confirm-option" data-group="gender" data-value="${opt.key}" onclick="App.selectOption(this, 'gender')">
         ${icon} ${label}
       </button>`;
     }).join('');
@@ -178,10 +177,9 @@ const App = (() => {
   function renderStyleOptions(containerId, options) {
     const container = document.getElementById(containerId);
     container.innerHTML = options.map(opt => {
-      const isSelected = opt.key === 'casual' ? ' selected' : '';
       const label = t('style' + opt.key.charAt(0).toUpperCase() + opt.key.slice(1));
       const icons = { casual: '👕', office: '👔', elegant: '👗', street: '🧥' };
-      return `<button class="confirm-option${isSelected}" data-group="style" data-value="${opt.key}" onclick="App.selectOption(this, 'style')">
+      return `<button class="confirm-option" data-group="style" data-value="${opt.key}" onclick="App.selectOption(this, 'style')">
         ${icons[opt.key]} ${label}
       </button>`;
     }).join('');
@@ -202,12 +200,32 @@ const App = (() => {
   }
 
   function confirmAndAnalyze() {
+    // Validate required selections
+    if (!confirmedFeatures.gender) {
+      highlightRequired('gender-options');
+      return;
+    }
+    if (!confirmedFeatures.style) {
+      highlightRequired('style-options');
+      return;
+    }
+
     // Reclassify with user-confirmed features
     const result = Analyzer.reclassify(currentRgb, confirmedFeatures);
     currentResult = result;
 
     renderResults(result, currentPhotoUrl);
     goToStep('step-results');
+  }
+
+  function highlightRequired(containerId) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.closest('.confirm-card').style.boxShadow = '0 0 0 2px #e53935';
+    el.closest('.confirm-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => {
+      el.closest('.confirm-card').style.boxShadow = '';
+    }, 2000);
   }
 
   function renderResults(result, userPhotoUrl) {
