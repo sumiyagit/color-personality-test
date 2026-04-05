@@ -218,14 +218,6 @@ const App = (() => {
       { key: 'male' }
     ];
 
-    // Style options
-    const styleOptions = [
-      { key: 'casual' },
-      { key: 'office' },
-      { key: 'elegant' },
-      { key: 'street' }
-    ];
-
     // Render eye options
     renderOptions('eye-options', eyeOptions, 'eye', guessed.eyeColor, (key) => {
       return t('eye' + key.charAt(0).toUpperCase() + key.slice(1));
@@ -243,9 +235,6 @@ const App = (() => {
     // Render gender options
     renderGenderOptions('gender-options', genderOptions);
 
-    // Render style options
-    renderStyleOptions('style-options', styleOptions);
-
     // Set detected text
     document.getElementById('confirm-eye-detected').textContent =
       t('confirmDetected').replace('{value}', t('eye' + guessed.eyeColor.charAt(0).toUpperCase() + guessed.eyeColor.slice(1)));
@@ -254,7 +243,7 @@ const App = (() => {
     document.getElementById('confirm-skin-detected').textContent =
       t('confirmDetected').replace('{value}', t('skin' + guessed.skinUndertone.charAt(0).toUpperCase() + guessed.skinUndertone.slice(1)));
 
-    // Store initial selections — gender and style must be chosen by user
+    // Store initial selections — gender must be chosen, style moved to questions
     confirmedFeatures = {
       eyeColor: guessed.eyeColor,
       hairColor: guessed.hairColor,
@@ -330,10 +319,6 @@ const App = (() => {
       highlightRequired('gender-options');
       return;
     }
-    if (!confirmedFeatures.style) {
-      highlightRequired('style-options');
-      return;
-    }
 
     currentQuestionIndex = 0;
     questionAnswers = {};
@@ -369,9 +354,12 @@ const App = (() => {
       </button>`;
     }).join('');
 
+    const guideHtml = q.guide ? `<div class="question-guide">${q.guide}</div>` : '';
+
     container.innerHTML = `
       <h2 class="question-title">${title}</h2>
       <p class="question-desc">${desc}</p>
+      ${guideHtml}
       <div class="confirm-options question-options">${optionsHtml}</div>
     `;
   }
@@ -415,6 +403,11 @@ const App = (() => {
   }
 
   function proceedToResults() {
+    // Map stylePref question answer to confirmedFeatures.style
+    if (questionAnswers.stylePref) {
+      confirmedFeatures.style = questionAnswers.stylePref;
+    }
+
     // Reclassify with all data (confirmed features + question answers)
     const enhancedFeatures = { ...confirmedFeatures, ...questionAnswers };
     const result = Analyzer.reclassify(currentRgb, enhancedFeatures);
@@ -428,10 +421,6 @@ const App = (() => {
     // Validate required selections
     if (!confirmedFeatures.gender) {
       highlightRequired('gender-options');
-      return;
-    }
-    if (!confirmedFeatures.style) {
-      highlightRequired('style-options');
       return;
     }
 

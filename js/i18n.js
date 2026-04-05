@@ -78,6 +78,13 @@ const I18N = {
     seeResults: "Үр дүнг харах",
 
     // Questions
+    q_stylePref: "Ямар төрлийн хувцаслалт харахыг хүсэж байна вэ?",
+    q_stylePref_desc: "Танд тохирох хувцасны зөвлөмжийг энэ сонголтоор гаргана.",
+    q_stylePref_casual: "👕 Чөлөөт",
+    q_stylePref_office: "👔 Оффис",
+    q_stylePref_elegant: "👗 Дэгжин",
+    q_stylePref_street: "🧥 Гудамжны",
+
     q_veinColor: "Бугуйн судасны өнгө",
     q_veinColor_desc: "Бугуйгаа нарны гэрэлд харж, судасны өнгийг тодорхойлно уу.",
     q_veinColor_green: "Ногоон",
@@ -321,6 +328,13 @@ const I18N = {
     seeResults: "See Results",
 
     // Questions
+    q_stylePref: "What type of clothing would you like to see?",
+    q_stylePref_desc: "We'll tailor recommendations based on your style preference.",
+    q_stylePref_casual: "👕 Casual",
+    q_stylePref_office: "👔 Office",
+    q_stylePref_elegant: "👗 Elegant",
+    q_stylePref_street: "🧥 Street",
+
     q_veinColor: "Wrist Vein Color",
     q_veinColor_desc: "Look at your wrist veins in natural light. What color do they appear?",
     q_veinColor_green: "Green",
