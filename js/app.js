@@ -83,15 +83,17 @@ const App = (() => {
     const traits = tPersonality(key);
     personalityList.innerHTML = traits.map(p => `<li>${p}</li>`).join('');
 
-    // Section headings
-    const headings = document.querySelectorAll('#step-results .result-card h3');
-    headings.forEach(h3 => {
-      const text = h3.textContent;
-      if (text.includes('Personality') || text.includes('зан чанар')) h3.textContent = t('yourPersonality');
-      else if (text.includes('Best Colors') || text.includes('шилдэг өнгө')) h3.textContent = t('yourBestColors');
-      else if (text.includes('Avoid') || text.includes('Зайлсхийх')) h3.textContent = t('colorsToAvoid');
-      else if (text.includes('Clothing') || text.includes('хувцас')) h3.textContent = t('clothingForYou');
-      else if (text.includes('Accessories') || text.includes('чимэглэл')) h3.textContent = t('accessoriesForYou');
+    // Section headings — use data-label attributes
+    const labelMap = {
+      'personality': 'yourPersonality',
+      'best-colors': 'yourBestColors',
+      'avoid-colors': 'colorsToAvoid',
+      'clothing': 'clothingForYou',
+      'accessories': 'accessoriesForYou'
+    };
+    document.querySelectorAll('#step-results .result-card h3[data-label]').forEach(h3 => {
+      const key = labelMap[h3.dataset.label];
+      if (key) h3.textContent = t(key);
     });
 
     // Best colors

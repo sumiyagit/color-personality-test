@@ -2,39 +2,39 @@
 const I18N = {
   mn: {
     // Welcome
-    title: "Таны Өнгөний\nЗан Чанар юу вэ?",
-    subtitle: "Улирлын өнгөний төрлөө олж, хувийн стилийн зөвлөмж аваарай. Ердөө 3 алхамд.",
+    title: "Өөрт тохирсон\nхувцаслалттай болоорой",
+    subtitle: "Нүүрнийхээ өнгийг шинжлүүлэн, танд хамгийн тохирох хувцас, өнгөний зөвлөмж аваарай. Ердөө 3 алхамд.",
     step1: "Сэлфи авах",
     step2: "Бид таны өнгийг шинжилнэ",
-    step3: "Стилийн гарын авлага авах",
+    step3: "Тохирох хувцасны зөвлөмж авах",
     letsBegin: "Эхлэе",
 
     // Capture
     showFace: "Нүүрээ харуулна уу",
-    captureSubtitle: "Бид таны арьсны өнгийг шинжлэн, төгс өнгөний улирлыг тодорхойлно.",
+    captureSubtitle: "Таны арьсны өнгөнд үндэслэн хамгийн тохирох хувцас, өнгөний зөвлөмж өгнө.",
     photoPlaceholder: "Таны зураг энд харагдана",
     takeSelfie: "Сэлфи авах",
     or: "эсвэл",
     uploadPhoto: "Зураг оруулах",
     retake: "Дахин авах",
-    analyzeColors: "Өнгөө шинжлүүлэх",
+    analyzeColors: "Шинжлүүлэх",
 
     // Analyzing
     analyzingTitle: "Таны өнгийг шинжилж байна",
     status1: "Арьсны өнгийг тодорхойлж байна...",
     status2: "Дэд өнгийг шинжилж байна...",
-    status3: "Өнгөний улиралтай тохируулж байна...",
-    status4: "Үр дүнг бэлтгэж байна...",
+    status3: "Тохирох хувцасны өнгийг тааруулж байна...",
+    status4: "Зөвлөмжийг бэлтгэж байна...",
 
     // Results
     you: "Та",
-    yourPersonality: "✨ Таны зан чанар",
-    yourBestColors: "🎨 Таны шилдэг өнгөнүүд",
+    yourPersonality: "✨ Таны онцлог шинж",
+    yourBestColors: "🎨 Танд тохирох өнгөнүүд",
     colorsToAvoid: "🚫 Зайлсхийх өнгөнүүд",
-    clothingForYou: "👗 Танд зориулсан хувцас",
-    clothingIntro: "Таны {season} өнгөнд тохирсон хувцаснууд:",
-    accessoriesForYou: "💎 Танд зориулсан гоёл чимэглэл",
-    accessoriesIntro: "Таны өнгөний палитрт тохирсон:",
+    clothingForYou: "👗 Танд тохирох хувцас",
+    clothingIntro: "Таны {season} өнгөнд хамгийн тохирох хувцаснууд:",
+    accessoriesForYou: "💎 Танд тохирох гоёл чимэглэл",
+    accessoriesIntro: "Таны өнгөнд тохирсон загварууд:",
     looksGreatOn: "{season} төрөлд маш сайн тохирно",
     tryAgain: "Дахин оролдох",
 
@@ -161,39 +161,39 @@ const I18N = {
 
   en: {
     // Welcome
-    title: "What's Your\nColor Personality?",
-    subtitle: "Discover your seasonal color type and get personalized style recommendations in 3 simple steps.",
+    title: "Find Clothes\nThat Suit You",
+    subtitle: "Get personalized clothing and color recommendations based on your skin tone in 3 simple steps.",
     step1: "Take a selfie",
     step2: "We analyze your colors",
-    step3: "Get your style guide",
+    step3: "Get clothing recommendations",
     letsBegin: "Let's Begin",
 
     // Capture
     showFace: "Show Us Your Face",
-    captureSubtitle: "We'll analyze your skin tone to find your perfect color season.",
+    captureSubtitle: "We'll analyze your skin tone to recommend the best clothing colors for you.",
     photoPlaceholder: "Your photo will appear here",
     takeSelfie: "Take Selfie",
     or: "or",
     uploadPhoto: "Upload Photo",
     retake: "Retake",
-    analyzeColors: "Analyze My Colors",
+    analyzeColors: "Analyze",
 
     // Analyzing
     analyzingTitle: "Analyzing Your Colors",
     status1: "Detecting skin tone...",
     status2: "Analyzing undertones...",
-    status3: "Matching color season...",
-    status4: "Preparing your results...",
+    status3: "Matching your best clothing colors...",
+    status4: "Preparing recommendations...",
 
     // Results
     you: "You",
-    yourPersonality: "✨ Your Personality",
-    yourBestColors: "🎨 Your Best Colors",
+    yourPersonality: "✨ Your Style Profile",
+    yourBestColors: "🎨 Colors That Suit You",
     colorsToAvoid: "🚫 Colors to Avoid",
     clothingForYou: "👗 Clothing For You",
     clothingIntro: "Pieces that complement your {season} coloring:",
     accessoriesForYou: "💎 Accessories For You",
-    accessoriesIntro: "Finishing touches for your palette:",
+    accessoriesIntro: "Styles that match your colors:",
     looksGreatOn: "Looks great on {season} types",
     tryAgain: "Try Again",
 
@@ -282,14 +282,17 @@ function applyTranslations() {
   // Analyzing
   document.querySelector('#step-analyzing h2').textContent = t('analyzingTitle');
 
-  // Result static labels
-  document.querySelectorAll('#step-results .result-card h3').forEach(h3 => {
-    const text = h3.textContent;
-    if (text.includes('Personality') || text.includes('зан чанар')) h3.textContent = t('yourPersonality');
-    if (text.includes('Best Colors') || text.includes('шилдэг өнгө')) h3.textContent = t('yourBestColors');
-    if (text.includes('Avoid') || text.includes('Зайлсхийх')) h3.textContent = t('colorsToAvoid');
-    if (text.includes('Clothing') || text.includes('хувцас')) h3.textContent = t('clothingForYou');
-    if (text.includes('Accessories') || text.includes('чимэглэл')) h3.textContent = t('accessoriesForYou');
+  // Result static labels — use data attributes for reliable matching
+  const labelMap = {
+    'personality': 'yourPersonality',
+    'best-colors': 'yourBestColors',
+    'avoid-colors': 'colorsToAvoid',
+    'clothing': 'clothingForYou',
+    'accessories': 'accessoriesForYou'
+  };
+  document.querySelectorAll('#step-results .result-card h3[data-label]').forEach(h3 => {
+    const key = labelMap[h3.dataset.label];
+    if (key) h3.textContent = t(key);
   });
 
   // Try Again button
