@@ -73,6 +73,55 @@ const I18N = {
     styleElegant: "Дэгжин",
     styleStreet: "Гудамжны",
 
+    // Navigation
+    next: "Дараах",
+    seeResults: "Үр дүнг харах",
+
+    // Questions
+    q_veinColor: "Бугуйн судасны өнгө",
+    q_veinColor_desc: "Бугуйгаа нарны гэрэлд харж, судасны өнгийг тодорхойлно уу.",
+    q_veinColor_green: "Ногоон",
+    q_veinColor_blue: "Цэнхэр/Нил ягаан",
+    q_veinColor_both: "Холимог (ногоон + цэнхэр)",
+
+    q_jewelryPref: "Ямар үнэт металл танд илүү зохидог вэ?",
+    q_jewelryPref_desc: "Нүүрний дэргэд аль нь илүү сайн харагддаг вэ?",
+    q_jewelryPref_gold: "Алт",
+    q_jewelryPref_silver: "Мөнгө",
+    q_jewelryPref_both: "Аль аль нь",
+
+    q_whiteCream: "Цагаан эсвэл цөцгийн өнгө?",
+    q_whiteCream_desc: "Аль өнгө таны нүүр царайг илүү тодруулдаг вэ?",
+    q_whiteCream_white: "Цэвэр цагаан",
+    q_whiteCream_cream: "Цөцгийн өнгө / Зөөлөн цагаан",
+    q_whiteCream_both: "Аль аль нь адилхан",
+
+    q_lipColor: "Уруулын байгалийн өнгө",
+    q_lipColor_desc: "Ямар ч будалгүй үеийн уруулын өнгө ямар вэ?",
+    q_lipColor_peach: "Тоорын өнгөтэй",
+    q_lipColor_pink: "Ягаан",
+    q_lipColor_berry: "Жимсний өнгөтэй",
+    q_lipColor_brown: "Бор / Хүрэн",
+
+    q_sunReaction: "Нарны хариу урвал",
+    q_sunReaction_desc: "Удаан нарлахад таны арьс ямар хариу үзүүлдэг вэ?",
+    q_sunReaction_burn: "Шарддаг (улайдаг)",
+    q_sunReaction_tan: "Бариздаг (хүрэн болдог)",
+    q_sunReaction_burnThenTan: "Эхлээд шардаад дараа нь бариздаг",
+
+    q_contrastLevel: "Таны нүүрний ялгарал",
+    q_contrastLevel_desc: "Арьс, үс, нүдний өнгөний ялгаа хэр их вэ?",
+    q_contrastLevel_low: "Бага (бүгд ойролцоо өнгөтэй)",
+    q_contrastLevel_medium: "Дунд зэрэг",
+    q_contrastLevel_high: "Өндөр (хар үс + цайвар арьс гэх мэт)",
+
+    // Payment
+    paymentTitle: "Таны үр дүн бэлэн боллоо!",
+    paymentSubtitle: "Таны өнгөний шинжилгээний үр дүнтэй танилцаарай",
+    paymentPrice: "0₮",
+    paymentLabel: "Үнэгүй",
+    paymentButton: "Үр дүнг харах",
+
     // Season names
     seasons: {
       lightSpring: { name: "Цайвар Хавар", subtitle: "Сэрүүн & Гэрэлтэй" },
@@ -267,6 +316,55 @@ const I18N = {
     styleElegant: "Elegant",
     styleStreet: "Street",
 
+    // Navigation
+    next: "Next",
+    seeResults: "See Results",
+
+    // Questions
+    q_veinColor: "Wrist Vein Color",
+    q_veinColor_desc: "Look at your wrist veins in natural light. What color do they appear?",
+    q_veinColor_green: "Green",
+    q_veinColor_blue: "Blue/Purple",
+    q_veinColor_both: "Mixed (green + blue)",
+
+    q_jewelryPref: "Which metal looks better on you?",
+    q_jewelryPref_desc: "Which metal flatters your face more?",
+    q_jewelryPref_gold: "Gold",
+    q_jewelryPref_silver: "Silver",
+    q_jewelryPref_both: "Both equally",
+
+    q_whiteCream: "Pure White or Cream?",
+    q_whiteCream_desc: "Which color brightens your complexion more?",
+    q_whiteCream_white: "Pure white",
+    q_whiteCream_cream: "Cream / Off-white",
+    q_whiteCream_both: "Both look equal",
+
+    q_lipColor: "Natural Lip Color",
+    q_lipColor_desc: "Without any makeup, what is your natural lip color?",
+    q_lipColor_peach: "Peach",
+    q_lipColor_pink: "Pink",
+    q_lipColor_berry: "Berry/Plum",
+    q_lipColor_brown: "Brown/Mauve",
+
+    q_sunReaction: "Sun Reaction",
+    q_sunReaction_desc: "How does your skin react to prolonged sun exposure?",
+    q_sunReaction_burn: "Burns easily (turns red)",
+    q_sunReaction_tan: "Tans easily (turns brown)",
+    q_sunReaction_burnThenTan: "Burns first, then tans",
+
+    q_contrastLevel: "Your Face Contrast",
+    q_contrastLevel_desc: "How different are your skin, hair, and eye colors?",
+    q_contrastLevel_low: "Low (all similar tones)",
+    q_contrastLevel_medium: "Medium",
+    q_contrastLevel_high: "High (e.g. dark hair + light skin)",
+
+    // Payment
+    paymentTitle: "Your Results Are Ready!",
+    paymentSubtitle: "Discover your personalized color analysis results",
+    paymentPrice: "0₮",
+    paymentLabel: "Free",
+    paymentButton: "See My Results",
+
     // Season names (use from data.js)
     seasons: {
       lightSpring: { name: "Light Spring", subtitle: "Fresh & Luminous" },
@@ -373,6 +471,23 @@ function applyTranslations() {
     confirmBtn.innerHTML = '';
     confirmBtn.appendChild(document.createTextNode(t('confirmSubmit') + ' '));
     if (svgEl) confirmBtn.appendChild(svgEl);
+  }
+
+  // Payment step
+  const paymentTitle = document.getElementById('payment-title');
+  if (paymentTitle) paymentTitle.textContent = t('paymentTitle');
+  const paymentSub = document.getElementById('payment-subtitle');
+  if (paymentSub) paymentSub.textContent = t('paymentSubtitle');
+  const paymentPrice = document.getElementById('payment-price');
+  if (paymentPrice) paymentPrice.textContent = t('paymentPrice');
+  const paymentLabel = document.getElementById('payment-label');
+  if (paymentLabel) paymentLabel.textContent = t('paymentLabel');
+  const paymentBtn = document.querySelector('#step-payment .btn-primary');
+  if (paymentBtn) {
+    const svgEl = paymentBtn.querySelector('svg');
+    paymentBtn.innerHTML = '';
+    paymentBtn.appendChild(document.createTextNode(t('paymentButton') + ' '));
+    if (svgEl) paymentBtn.appendChild(svgEl);
   }
 
   // Result static labels — use data attributes for reliable matching

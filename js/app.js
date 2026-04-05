@@ -5,6 +5,61 @@ const App = (() => {
   let currentRgb = null;
   let confirmedFeatures = {};
 
+  // Additional color analysis questions
+  const QUESTIONS = [
+    {
+      id: 'veinColor',
+      options: [
+        { key: 'green', color: '#2E8B57' },
+        { key: 'blue', color: '#4169E1' },
+        { key: 'both', color: '#7B8CDE' }
+      ]
+    },
+    {
+      id: 'jewelryPref',
+      options: [
+        { key: 'gold' },
+        { key: 'silver' },
+        { key: 'both' }
+      ]
+    },
+    {
+      id: 'whiteCream',
+      options: [
+        { key: 'white' },
+        { key: 'cream' },
+        { key: 'both' }
+      ]
+    },
+    {
+      id: 'lipColor',
+      options: [
+        { key: 'peach', color: '#FFDAB9' },
+        { key: 'pink', color: '#FFB6C1' },
+        { key: 'berry', color: '#8B2252' },
+        { key: 'brown', color: '#A0522D' }
+      ]
+    },
+    {
+      id: 'sunReaction',
+      options: [
+        { key: 'burn' },
+        { key: 'tan' },
+        { key: 'burnThenTan' }
+      ]
+    },
+    {
+      id: 'contrastLevel',
+      options: [
+        { key: 'low' },
+        { key: 'medium' },
+        { key: 'high' }
+      ]
+    }
+  ];
+  let currentQuestionIndex = 0;
+  let questionAnswers = {};
+
   function goToStep(stepId) {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
     const step = document.getElementById(stepId);
@@ -199,6 +254,106 @@ const App = (() => {
     else if (group === 'style') confirmedFeatures.style = value;
   }
 
+  function goToQuestions() {
+    // Validate required selections from confirm step
+    if (!confirmedFeatures.gender) {
+      highlightRequired('gender-options');
+      return;
+    }
+    if (!confirmedFeatures.style) {
+      highlightRequired('style-options');
+      return;
+    }
+
+    currentQuestionIndex = 0;
+    questionAnswers = {};
+    renderQuestion(0);
+    goToStep('step-questions');
+  }
+
+  function renderQuestion(index) {
+    const q = QUESTIONS[index];
+    const container = document.getElementById('question-container');
+    const total = QUESTIONS.length;
+
+    // Update progress
+    document.getElementById('question-progress-fill').style.width = ((index + 1) / total * 100) + '%';
+    document.getElementById('question-progress-text').textContent = (index + 1) + '/' + total;
+
+    // Update button text
+    const nextBtn = document.getElementById('btn-question-next');
+    const isLast = index === total - 1;
+    const svgHtml = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+    nextBtn.innerHTML = (isLast ? t('seeResults') : t('next')) + ' ' + svgHtml;
+
+    // Question title and description
+    const title = t('q_' + q.id);
+    const desc = t('q_' + q.id + '_desc');
+
+    let optionsHtml = q.options.map(opt => {
+      const label = t('q_' + q.id + '_' + opt.key);
+      const selected = questionAnswers[q.id] === opt.key ? ' selected' : '';
+      const dotHtml = opt.color ? `<span class="option-dot" style="background:${opt.color}"></span>` : '';
+      return `<button class="confirm-option${selected}" data-value="${opt.key}" onclick="App.selectQuestionAnswer('${q.id}', '${opt.key}', this)">
+        ${dotHtml}${label}
+      </button>`;
+    }).join('');
+
+    container.innerHTML = `
+      <h2 class="question-title">${title}</h2>
+      <p class="question-desc">${desc}</p>
+      <div class="confirm-options question-options">${optionsHtml}</div>
+    `;
+  }
+
+  function selectQuestionAnswer(questionId, value, btn) {
+    btn.parentElement.querySelectorAll('.confirm-option').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    questionAnswers[questionId] = value;
+  }
+
+  function nextQuestion() {
+    const q = QUESTIONS[currentQuestionIndex];
+    if (!questionAnswers[q.id]) {
+      // Highlight that selection is needed
+      const container = document.getElementById('question-container');
+      const opts = container.querySelector('.question-options');
+      if (opts) {
+        opts.style.boxShadow = '0 0 0 2px #e53935';
+        opts.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => { opts.style.boxShadow = ''; }, 2000);
+      }
+      return;
+    }
+
+    if (currentQuestionIndex < QUESTIONS.length - 1) {
+      currentQuestionIndex++;
+      renderQuestion(currentQuestionIndex);
+    } else {
+      // All questions answered — go to payment gate
+      goToStep('step-payment');
+    }
+  }
+
+  function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      renderQuestion(currentQuestionIndex);
+    } else {
+      goToStep('step-confirm');
+    }
+  }
+
+  function proceedToResults() {
+    // Reclassify with all data (confirmed features + question answers)
+    const enhancedFeatures = { ...confirmedFeatures, ...questionAnswers };
+    const result = Analyzer.reclassify(currentRgb, enhancedFeatures);
+    currentResult = result;
+
+    renderResults(result, currentPhotoUrl);
+    goToStep('step-results');
+  }
+
   function confirmAndAnalyze() {
     // Validate required selections
     if (!confirmedFeatures.gender) {
@@ -369,6 +524,8 @@ const App = (() => {
     currentPhotoUrl = null;
     currentRgb = null;
     confirmedFeatures = {};
+    currentQuestionIndex = 0;
+    questionAnswers = {};
     goToStep('step-welcome');
   }
 
@@ -379,5 +536,5 @@ const App = (() => {
     }
   }
 
-  return { goToStep, analyzePhoto, restart, reRenderIfNeeded, selectOption, confirmAndAnalyze };
+  return { goToStep, analyzePhoto, restart, reRenderIfNeeded, selectOption, confirmAndAnalyze, goToQuestions, nextQuestion, prevQuestion, selectQuestionAnswer, proceedToResults };
 })();

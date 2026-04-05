@@ -123,14 +123,37 @@ const Analyzer = (() => {
     return { eyeColor, hairColor, skinUndertone };
   }
 
-  // Classify into 12-season type using skin analysis + user-confirmed features
+  // Classify into 12-season type using skin analysis + user-confirmed features + question answers
   function classifySeason(rgb, userFeatures) {
     const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
     const { h, s, l } = hsl;
 
     // Use user-confirmed undertone if available, otherwise detect from image
-    const skinUndertone = userFeatures?.skinUndertone ||
+    let skinUndertone = userFeatures?.skinUndertone ||
       ((h >= 10 && h <= 50) || (h >= 350) ? 'warm' : 'cool');
+
+    // Refine undertone with additional question signals
+    const vein = userFeatures?.veinColor;
+    const jewelry = userFeatures?.jewelryPref;
+    const whiteCream = userFeatures?.whiteCream;
+    const sunReaction = userFeatures?.sunReaction;
+
+    // Warm signals: green veins, gold jewelry, cream, tans easily
+    let warmScore = 0;
+    let coolScore = 0;
+    if (vein === 'green') warmScore += 2;
+    else if (vein === 'blue') coolScore += 2;
+    if (jewelry === 'gold') warmScore += 1;
+    else if (jewelry === 'silver') coolScore += 1;
+    if (whiteCream === 'cream') warmScore += 1;
+    else if (whiteCream === 'white') coolScore += 1;
+    if (sunReaction === 'tan') warmScore += 1;
+    else if (sunReaction === 'burn') coolScore += 1;
+
+    // Override undertone if question signals strongly disagree
+    if (warmScore >= 3 && coolScore <= 1) skinUndertone = 'warm';
+    else if (coolScore >= 3 && warmScore <= 1) skinUndertone = 'cool';
+    else if (warmScore >= 2 && coolScore >= 2) skinUndertone = 'neutral';
 
     const isWarm = skinUndertone === 'warm' || skinUndertone === 'neutral';
     const isCool = skinUndertone === 'cool';
@@ -147,39 +170,39 @@ const Analyzer = (() => {
     const eye = userFeatures?.eyeColor || 'brown';
     const hair = userFeatures?.hairColor || 'brown';
 
-    // High contrast: dark hair + light skin, or light hair + light eyes
+    // Contrast from user's self-assessment or calculated
+    const contrastLevel = userFeatures?.contrastLevel;
     const darkHair = hair === 'black' || hair === 'darkBrown';
     const lightEyes = eye === 'blue' || eye === 'green' || eye === 'gray';
-    const highContrast = (darkHair && isLight) || (lightEyes && darkHair);
+    const highContrast = contrastLevel === 'high' || (darkHair && isLight) || (lightEyes && darkHair);
+    const lowContrast = contrastLevel === 'low';
 
-    // Classification logic with user features
+    // Classification logic with all features
     let seasonKey;
 
     if (isWarm && isLight) {
       if (highContrast || isBright) seasonKey = 'brightSpring';
-      else if (isMuted) seasonKey = 'lightSpring';
+      else if (isMuted || lowContrast) seasonKey = 'lightSpring';
       else seasonKey = 'lightSpring';
     } else if (isWarm && isDark) {
       if (isBright || highContrast) seasonKey = 'deepAutumn';
-      else if (isMuted) seasonKey = 'deepAutumn';
+      else if (isMuted || lowContrast) seasonKey = 'softAutumn';
       else seasonKey = 'warmAutumn';
     } else if (isWarm) {
-      // Medium warm
       if (isBright || highContrast) seasonKey = 'brightSpring';
-      else if (isMuted) seasonKey = 'softAutumn';
+      else if (isMuted || lowContrast) seasonKey = 'softAutumn';
       else seasonKey = 'warmSpring';
     } else if (isCool && isLight) {
       if (highContrast || isBright) seasonKey = 'brightWinter';
-      else if (isMuted) seasonKey = 'lightSummer';
+      else if (isMuted || lowContrast) seasonKey = 'lightSummer';
       else seasonKey = 'lightSummer';
     } else if (isCool && isDark) {
       if (isBright || highContrast) seasonKey = 'deepWinter';
-      else if (isMuted) seasonKey = 'deepWinter';
+      else if (isMuted || lowContrast) seasonKey = 'coolWinter';
       else seasonKey = 'coolWinter';
     } else if (isCool) {
-      // Medium cool
       if (isBright || highContrast) seasonKey = 'brightWinter';
-      else if (isMuted) seasonKey = 'softSummer';
+      else if (isMuted || lowContrast) seasonKey = 'softSummer';
       else seasonKey = 'coolSummer';
     } else {
       seasonKey = 'warmSpring';

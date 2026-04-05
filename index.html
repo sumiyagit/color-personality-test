@@ -187,14 +187,70 @@
           <div class="confirm-options" id="style-options"></div>
         </div>
 
-        <button class="btn-primary confirm-submit-btn" onclick="App.confirmAndAnalyze()">
+        <button class="btn-primary confirm-submit-btn" onclick="App.goToQuestions()">
           Үр дүнг харах
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
       </div>
     </section>
 
-    <!-- Step 5: Results -->
+    <!-- Step 5: Additional Questions (one at a time) -->
+    <section id="step-questions" class="step">
+      <div class="step-content">
+        <div class="step-header">
+          <button class="btn-back" onclick="App.prevQuestion()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+          <div class="step-indicator">
+            <span class="dot done"></span>
+            <span class="dot done"></span>
+            <span class="dot active"></span>
+          </div>
+        </div>
+
+        <div class="question-progress">
+          <div class="question-progress-bar">
+            <div id="question-progress-fill" class="question-progress-fill"></div>
+          </div>
+          <span id="question-progress-text" class="question-progress-text">1/6</span>
+        </div>
+
+        <div id="question-container" class="question-container">
+          <!-- Dynamically filled by JS -->
+        </div>
+
+        <div class="question-nav">
+          <button id="btn-question-next" class="btn-primary" onclick="App.nextQuestion()">
+            Дараах
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 6: Payment Gate -->
+    <section id="step-payment" class="step">
+      <div class="step-content center-content">
+        <div class="payment-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="1.5">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <h2 id="payment-title">Таны үр дүн бэлэн боллоо!</h2>
+        <p class="subtitle" id="payment-subtitle">Таны өнгөний шинжилгээний үр дүнтэй танилцаарай</p>
+        <div class="payment-price">
+          <span class="price-amount" id="payment-price">0₮</span>
+          <span class="price-label" id="payment-label">Үнэгүй</span>
+        </div>
+        <button class="btn-primary" onclick="App.proceedToResults()">
+          Үр дүнг харах
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Step 7: Results -->
     <section id="step-results" class="step">
       <div class="step-content">
         <div class="step-header">

@@ -1,3 +1,19 @@
+// Generate SVG palette illustration for a season type
+function makeSeasonSvg(colors, emoji) {
+  const c = colors.slice(0, 6);
+  while (c.length < 6) c.push('#ddd');
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+    <rect width="300" height="300" rx="20" fill="${c[0]}"/>
+    <circle cx="150" cy="90" r="50" fill="${c[1]}" opacity="0.85"/>
+    <circle cx="90" cy="170" r="40" fill="${c[2]}" opacity="0.8"/>
+    <circle cx="210" cy="170" r="40" fill="${c[3]}" opacity="0.8"/>
+    <circle cx="120" cy="240" r="30" fill="${c[4]}" opacity="0.75"/>
+    <circle cx="180" cy="240" r="30" fill="${c[5]}" opacity="0.75"/>
+    <text x="150" y="155" text-anchor="middle" font-size="48">${emoji}</text>
+  </svg>`;
+  return 'data:image/svg+xml,' + encodeURIComponent(svg);
+}
+
 // 12-Season Color Analysis Data
 const SEASONS = {
   lightSpring: {
@@ -48,7 +64,7 @@ const SEASONS = {
         image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=400&q=80"
       }
     ],
-    faceImage: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=300&q=80"
+    faceImage: "" // set dynamically by makeSeasonSvg
   },
 
   warmSpring: {
@@ -99,7 +115,7 @@ const SEASONS = {
         image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=400&q=80"
       }
     ],
-    faceImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80"
+    faceImage: ""
   },
 
   brightSpring: {
@@ -150,7 +166,7 @@ const SEASONS = {
         image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&q=80"
       }
     ],
-    faceImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&q=80"
+    faceImage: ""
   },
 
   lightSummer: {
@@ -201,7 +217,7 @@ const SEASONS = {
         image: "https://images.unsplash.com/photo-1601370690183-1c7796ecec61?w=400&q=80"
       }
     ],
-    faceImage: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&q=80"
+    faceImage: ""
   },
 
   coolSummer: {
@@ -252,7 +268,7 @@ const SEASONS = {
         image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80"
       }
     ],
-    faceImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&q=80"
+    faceImage: ""
   },
 
   softSummer: {
@@ -303,7 +319,7 @@ const SEASONS = {
         image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80"
       }
     ],
-    faceImage: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&q=80"
+    faceImage: ""
   },
 
   softAutumn: {
@@ -354,7 +370,7 @@ const SEASONS = {
         image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=400&q=80"
       }
     ],
-    faceImage: "https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=300&q=80"
+    faceImage: ""
   },
 
   warmAutumn: {
@@ -405,7 +421,7 @@ const SEASONS = {
         image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80"
       }
     ],
-    faceImage: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&q=80"
+    faceImage: ""
   },
 
   deepAutumn: {
@@ -456,7 +472,7 @@ const SEASONS = {
         image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80"
       }
     ],
-    faceImage: "https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=300&q=80"
+    faceImage: ""
   },
 
   deepWinter: {
@@ -507,7 +523,7 @@ const SEASONS = {
         image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&q=80"
       }
     ],
-    faceImage: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=300&q=80"
+    faceImage: ""
   },
 
   coolWinter: {
@@ -558,7 +574,7 @@ const SEASONS = {
         image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&q=80"
       }
     ],
-    faceImage: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&q=80"
+    faceImage: ""
   },
 
   brightWinter: {
@@ -609,9 +625,15 @@ const SEASONS = {
         image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&q=80"
       }
     ],
-    faceImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80"
+    faceImage: ""
   }
 };
+
+// Generate season illustration SVGs from each season's bestColors
+Object.keys(SEASONS).forEach(key => {
+  const s = SEASONS[key];
+  s.faceImage = makeSeasonSvg(s.bestColors, s.emoji);
+});
 
 // GENDER_STYLE_CLOTHING and GENDER_ACCESSORIES are loaded from clothing-data.js
 
