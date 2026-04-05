@@ -95,78 +95,113 @@ const Analyzer = (() => {
     return { h: h * 360, s: s * 100, l: l * 100 };
   }
 
-  // Classify RGB color into a 12-season type
-  function classifySeason(rgb) {
+  // Guess initial features from skin color analysis
+  function guessFeatures(rgb) {
     const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
     const { h, s, l } = hsl;
 
-    // Warmth: hue in the warm range (yellow-orange-red) = warm, otherwise cool
-    // Normalize hue to handle wrapping
+    // Guess skin undertone
     const isWarm = (h >= 10 && h <= 50) || (h >= 350);
-    const isCool = !isWarm;
+    let skinUndertone = isWarm ? 'warm' : 'cool';
+    if (s <= 25) skinUndertone = 'neutral';
+
+    // Guess eye color based on common correlations with skin tone
+    let eyeColor;
+    if (l <= 50) eyeColor = 'black';
+    else if (l <= 65 && isWarm) eyeColor = 'brown';
+    else if (l <= 65) eyeColor = 'brown';
+    else eyeColor = 'brown';
+
+    // Guess hair color
+    let hairColor;
+    if (l <= 45) hairColor = 'black';
+    else if (l <= 60) hairColor = 'darkBrown';
+    else if (l <= 70 && isWarm) hairColor = 'brown';
+    else if (l <= 70) hairColor = 'brown';
+    else hairColor = 'brown';
+
+    return { eyeColor, hairColor, skinUndertone };
+  }
+
+  // Classify into 12-season type using skin analysis + user-confirmed features
+  function classifySeason(rgb, userFeatures) {
+    const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+    const { h, s, l } = hsl;
+
+    // Use user-confirmed undertone if available, otherwise detect from image
+    const skinUndertone = userFeatures?.skinUndertone ||
+      ((h >= 10 && h <= 50) || (h >= 350) ? 'warm' : 'cool');
+
+    const isWarm = skinUndertone === 'warm' || skinUndertone === 'neutral';
+    const isCool = skinUndertone === 'cool';
 
     // Depth: how light or dark
     const isLight = l >= 65;
     const isDark = l <= 45;
-    const isMedium = !isLight && !isDark;
 
     // Saturation: how vivid
     const isMuted = s <= 35;
     const isBright = s >= 55;
 
-    // Classification logic
+    // Eye and hair influence on contrast
+    const eye = userFeatures?.eyeColor || 'brown';
+    const hair = userFeatures?.hairColor || 'brown';
+
+    // High contrast: dark hair + light skin, or light hair + light eyes
+    const darkHair = hair === 'black' || hair === 'darkBrown';
+    const lightEyes = eye === 'blue' || eye === 'green' || eye === 'gray';
+    const highContrast = (darkHair && isLight) || (lightEyes && darkHair);
+
+    // Classification logic with user features
     let seasonKey;
 
-    if (isWarm && isLight && !isMuted) {
-      seasonKey = 'lightSpring';
-    } else if (isWarm && isLight && isMuted) {
-      seasonKey = 'lightSpring';
-    } else if (isWarm && isMedium && isBright) {
-      seasonKey = 'brightSpring';
-    } else if (isWarm && isMedium && !isMuted) {
-      seasonKey = 'warmSpring';
-    } else if (isWarm && isMedium && isMuted) {
-      seasonKey = 'softAutumn';
-    } else if (isWarm && isDark && isBright) {
-      seasonKey = 'deepAutumn';
-    } else if (isWarm && isDark && !isMuted) {
-      seasonKey = 'warmAutumn';
-    } else if (isWarm && isDark && isMuted) {
-      seasonKey = 'deepAutumn';
-    } else if (isCool && isLight && isBright) {
-      seasonKey = 'brightWinter';
-    } else if (isCool && isLight && !isMuted) {
-      seasonKey = 'lightSummer';
-    } else if (isCool && isLight && isMuted) {
-      seasonKey = 'lightSummer';
-    } else if (isCool && isMedium && isBright) {
-      seasonKey = 'brightWinter';
-    } else if (isCool && isMedium && !isMuted) {
-      seasonKey = 'coolSummer';
-    } else if (isCool && isMedium && isMuted) {
-      seasonKey = 'softSummer';
-    } else if (isCool && isDark && isBright) {
-      seasonKey = 'deepWinter';
-    } else if (isCool && isDark && !isMuted) {
-      seasonKey = 'coolWinter';
-    } else if (isCool && isDark && isMuted) {
-      seasonKey = 'deepWinter';
+    if (isWarm && isLight) {
+      if (highContrast || isBright) seasonKey = 'brightSpring';
+      else if (isMuted) seasonKey = 'lightSpring';
+      else seasonKey = 'lightSpring';
+    } else if (isWarm && isDark) {
+      if (isBright || highContrast) seasonKey = 'deepAutumn';
+      else if (isMuted) seasonKey = 'deepAutumn';
+      else seasonKey = 'warmAutumn';
+    } else if (isWarm) {
+      // Medium warm
+      if (isBright || highContrast) seasonKey = 'brightSpring';
+      else if (isMuted) seasonKey = 'softAutumn';
+      else seasonKey = 'warmSpring';
+    } else if (isCool && isLight) {
+      if (highContrast || isBright) seasonKey = 'brightWinter';
+      else if (isMuted) seasonKey = 'lightSummer';
+      else seasonKey = 'lightSummer';
+    } else if (isCool && isDark) {
+      if (isBright || highContrast) seasonKey = 'deepWinter';
+      else if (isMuted) seasonKey = 'deepWinter';
+      else seasonKey = 'coolWinter';
+    } else if (isCool) {
+      // Medium cool
+      if (isBright || highContrast) seasonKey = 'brightWinter';
+      else if (isMuted) seasonKey = 'softSummer';
+      else seasonKey = 'coolSummer';
     } else {
-      // Fallback
       seasonKey = 'warmSpring';
     }
 
     return {
       key: seasonKey,
       season: SEASONS[seasonKey],
-      analysis: { rgb, hsl, isWarm, isLight, isDark, isMuted, isBright }
+      analysis: { rgb, hsl, isWarm, isLight, isDark, isMuted, isBright, skinUndertone, eye, hair }
     };
   }
 
   async function analyze(imageDataUrl) {
     const rgb = await extractSkinColor(imageDataUrl);
-    return classifySeason(rgb);
+    const guessed = guessFeatures(rgb);
+    const initialResult = classifySeason(rgb, guessed);
+    return { ...initialResult, rgb, guessedFeatures: guessed };
   }
 
-  return { analyze };
+  function reclassify(rgb, confirmedFeatures) {
+    return classifySeason(rgb, confirmedFeatures);
+  }
+
+  return { analyze, reclassify };
 })();

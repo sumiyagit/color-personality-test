@@ -38,6 +38,41 @@ const I18N = {
     looksGreatOn: "{season} төрөлд маш сайн тохирно",
     tryAgain: "Дахин оролдох",
 
+    // Confirm step
+    confirmTitle: "Баталгаажуулалт",
+    confirmSubtitle: "Бид дараах зүйлсийг тодорхойлсон. Зөв эсэхийг шалгана уу.",
+    confirmEyeLabel: "👁️ Нүдний өнгө",
+    confirmHairLabel: "💇 Үсний өнгө",
+    confirmSkinLabel: "🎨 Арьсны дэд өнгө",
+    confirmDetected: "Бидний тодорхойлсон: {value}",
+    confirmSubmit: "Үр дүнг харах",
+    eyeBlack: "Хар",
+    eyeBrown: "Бор",
+    eyeHazel: "Ойн самрын",
+    eyeBlue: "Хөх",
+    eyeGreen: "Ногоон",
+    eyeGray: "Саарал",
+    hairBlack: "Хар",
+    hairDarkBrown: "Хүрэн бор",
+    hairBrown: "Бор",
+    hairBlonde: "Шар",
+    hairRed: "Улаан",
+    hairGray: "Саарал/Цагаан",
+    skinWarm: "Дулаан",
+    skinCool: "Сэрүүн",
+    skinNeutral: "Төвийг сахисан",
+    skinWarmDesc: "Алтлаг, шаргал",
+    skinCoolDesc: "Ягаан, улаавтар",
+    skinNeutralDesc: "Холимог",
+    confirmGenderLabel: "👤 Хүйс",
+    genderFemale: "Эмэгтэй",
+    genderMale: "Эрэгтэй",
+    confirmStyleLabel: "✨ Хувцаслалтын хэв маяг",
+    styleCasual: "Чөлөөт",
+    styleOffice: "Оффис",
+    styleElegant: "Дэгжин",
+    styleStreet: "Гудамжны",
+
     // Season names
     seasons: {
       lightSpring: { name: "Цайвар Хавар", subtitle: "Сэрүүн & Гэрэлтэй" },
@@ -197,6 +232,41 @@ const I18N = {
     looksGreatOn: "Looks great on {season} types",
     tryAgain: "Try Again",
 
+    // Confirm step
+    confirmTitle: "Confirm Your Features",
+    confirmSubtitle: "We detected the following. Please verify or correct them.",
+    confirmEyeLabel: "👁️ Eye Color",
+    confirmHairLabel: "💇 Hair Color",
+    confirmSkinLabel: "🎨 Skin Undertone",
+    confirmDetected: "We detected: {value}",
+    confirmSubmit: "See My Results",
+    eyeBlack: "Black",
+    eyeBrown: "Brown",
+    eyeHazel: "Hazel",
+    eyeBlue: "Blue",
+    eyeGreen: "Green",
+    eyeGray: "Gray",
+    hairBlack: "Black",
+    hairDarkBrown: "Dark Brown",
+    hairBrown: "Brown",
+    hairBlonde: "Blonde",
+    hairRed: "Red",
+    hairGray: "Gray/White",
+    skinWarm: "Warm",
+    skinCool: "Cool",
+    skinNeutral: "Neutral",
+    skinWarmDesc: "Golden, yellowish",
+    skinCoolDesc: "Pink, reddish",
+    skinNeutralDesc: "Mixed",
+    confirmGenderLabel: "👤 Gender",
+    genderFemale: "Female",
+    genderMale: "Male",
+    confirmStyleLabel: "✨ Style Preference",
+    styleCasual: "Casual",
+    styleOffice: "Office",
+    styleElegant: "Elegant",
+    styleStreet: "Street",
+
     // Season names (use from data.js)
     seasons: {
       lightSpring: { name: "Light Spring", subtitle: "Fresh & Luminous" },
@@ -281,6 +351,29 @@ function applyTranslations() {
 
   // Analyzing
   document.querySelector('#step-analyzing h2').textContent = t('analyzingTitle');
+
+  // Confirm step
+  const confirmTitle = document.getElementById('confirm-title');
+  if (confirmTitle) confirmTitle.textContent = t('confirmTitle');
+  const confirmSub = document.getElementById('confirm-subtitle');
+  if (confirmSub) confirmSub.textContent = t('confirmSubtitle');
+  const confirmEye = document.getElementById('confirm-eye-label');
+  if (confirmEye) confirmEye.textContent = t('confirmEyeLabel');
+  const confirmHair = document.getElementById('confirm-hair-label');
+  if (confirmHair) confirmHair.textContent = t('confirmHairLabel');
+  const confirmSkin = document.getElementById('confirm-skin-label');
+  if (confirmSkin) confirmSkin.textContent = t('confirmSkinLabel');
+  const confirmGender = document.getElementById('confirm-gender-label');
+  if (confirmGender) confirmGender.textContent = t('confirmGenderLabel');
+  const confirmStyle = document.getElementById('confirm-style-label');
+  if (confirmStyle) confirmStyle.textContent = t('confirmStyleLabel');
+  const confirmBtn = document.querySelector('.confirm-submit-btn');
+  if (confirmBtn) {
+    const svgEl = confirmBtn.querySelector('svg');
+    confirmBtn.innerHTML = '';
+    confirmBtn.appendChild(document.createTextNode(t('confirmSubmit') + ' '));
+    if (svgEl) confirmBtn.appendChild(svgEl);
+  }
 
   // Result static labels — use data attributes for reliable matching
   const labelMap = {

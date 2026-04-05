@@ -133,7 +133,68 @@
       </div>
     </section>
 
-    <!-- Step 4: Results -->
+    <!-- Step 4: Confirm Features -->
+    <section id="step-confirm" class="step">
+      <div class="step-content">
+        <div class="step-header">
+          <button class="btn-back" onclick="App.goToStep('step-capture')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+          <div class="step-indicator">
+            <span class="dot done"></span>
+            <span class="dot active"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+
+        <h2 id="confirm-title">Баталгаажуулалт</h2>
+        <p class="subtitle" id="confirm-subtitle">Бид дараах зүйлсийг тодорхойлсон. Зөв эсэхийг шалгана уу.</p>
+
+        <div class="confirm-photo-row">
+          <img id="confirm-user-photo" class="confirm-photo" alt="You">
+        </div>
+
+        <!-- Eye Color -->
+        <div class="confirm-card">
+          <h3 id="confirm-eye-label">👁️ Нүдний өнгө</h3>
+          <p class="confirm-detected" id="confirm-eye-detected"></p>
+          <div class="confirm-options" id="eye-options"></div>
+        </div>
+
+        <!-- Hair Color -->
+        <div class="confirm-card">
+          <h3 id="confirm-hair-label">💇 Үсний өнгө</h3>
+          <p class="confirm-detected" id="confirm-hair-detected"></p>
+          <div class="confirm-options" id="hair-options"></div>
+        </div>
+
+        <!-- Skin Undertone -->
+        <div class="confirm-card">
+          <h3 id="confirm-skin-label">🎨 Арьсны дэд өнгө</h3>
+          <p class="confirm-detected" id="confirm-skin-detected"></p>
+          <div class="confirm-options" id="skin-options"></div>
+        </div>
+
+        <!-- Gender -->
+        <div class="confirm-card">
+          <h3 id="confirm-gender-label">👤 Хүйс</h3>
+          <div class="confirm-options" id="gender-options"></div>
+        </div>
+
+        <!-- Style Preference -->
+        <div class="confirm-card">
+          <h3 id="confirm-style-label">✨ Хувцаслалтын хэв маяг</h3>
+          <div class="confirm-options" id="style-options"></div>
+        </div>
+
+        <button class="btn-primary confirm-submit-btn" onclick="App.confirmAndAnalyze()">
+          Үр дүнг харах
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Step 5: Results -->
     <section id="step-results" class="step">
       <div class="step-content">
         <div class="step-header">
