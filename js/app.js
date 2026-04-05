@@ -5,10 +5,34 @@ const App = (() => {
   let currentRgb = null;
   let confirmedFeatures = {};
 
-  // Additional color analysis questions
+  // Additional color analysis questions (style moved here from confirm step)
   const QUESTIONS = [
     {
+      id: 'stylePref',
+      guide: `<svg viewBox="0 0 280 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="65" height="80" rx="8" fill="#f0eeeb"/><text x="32" y="35" text-anchor="middle" font-size="28">👕</text><text x="32" y="60" text-anchor="middle" font-size="8" fill="#888">Casual</text>
+        <rect x="72" y="0" width="65" height="80" rx="8" fill="#f0eeeb"/><text x="104" y="35" text-anchor="middle" font-size="28">👔</text><text x="104" y="60" text-anchor="middle" font-size="8" fill="#888">Office</text>
+        <rect x="144" y="0" width="65" height="80" rx="8" fill="#f0eeeb"/><text x="176" y="35" text-anchor="middle" font-size="28">👗</text><text x="176" y="60" text-anchor="middle" font-size="8" fill="#888">Elegant</text>
+        <rect x="216" y="0" width="65" height="80" rx="8" fill="#f0eeeb"/><text x="248" y="35" text-anchor="middle" font-size="28">🧥</text><text x="248" y="60" text-anchor="middle" font-size="8" fill="#888">Street</text>
+      </svg>`,
+      options: [
+        { key: 'casual' },
+        { key: 'office' },
+        { key: 'elegant' },
+        { key: 'street' }
+      ]
+    },
+    {
       id: 'veinColor',
+      guide: `<svg viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="200" height="120" rx="12" fill="#FFF5EE"/>
+        <path d="M40 100 Q50 60 60 40 Q65 25 70 20" stroke="#2E8B57" stroke-width="2" fill="none" opacity="0.7"/>
+        <path d="M55 100 Q65 55 75 35 Q80 22 82 18" stroke="#4169E1" stroke-width="2" fill="none" opacity="0.7"/>
+        <path d="M70 100 Q78 65 85 45 Q90 30 92 25" stroke="#2E8B57" stroke-width="1.5" fill="none" opacity="0.5"/>
+        <ellipse cx="100" cy="70" rx="60" ry="35" fill="none" stroke="#ddd" stroke-width="1" stroke-dasharray="4 3"/>
+        <circle cx="100" cy="15" r="8" fill="none" stroke="#999" stroke-width="1"/><text x="100" y="19" text-anchor="middle" font-size="10" fill="#999">🔍</text>
+        <text x="100" y="110" text-anchor="middle" font-size="9" fill="#999">Бугуй</text>
+      </svg>`,
       options: [
         { key: 'green', color: '#2E8B57' },
         { key: 'blue', color: '#4169E1' },
@@ -17,6 +41,15 @@ const App = (() => {
     },
     {
       id: 'jewelryPref',
+      guide: `<svg viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="200" height="120" rx="12" fill="#FAFAFA"/>
+        <circle cx="65" cy="50" r="25" fill="none" stroke="#DAA520" stroke-width="3"/>
+        <circle cx="65" cy="50" r="18" fill="none" stroke="#DAA520" stroke-width="1.5" opacity="0.5"/>
+        <circle cx="135" cy="50" r="25" fill="none" stroke="#C0C0C0" stroke-width="3"/>
+        <circle cx="135" cy="50" r="18" fill="none" stroke="#C0C0C0" stroke-width="1.5" opacity="0.5"/>
+        <text x="65" y="90" text-anchor="middle" font-size="10" fill="#B8860B">Алт</text>
+        <text x="135" y="90" text-anchor="middle" font-size="10" fill="#808080">Мөнгө</text>
+      </svg>`,
       options: [
         { key: 'gold' },
         { key: 'silver' },
@@ -25,6 +58,14 @@ const App = (() => {
     },
     {
       id: 'whiteCream',
+      guide: `<svg viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="200" height="120" rx="12" fill="#f8f6f3"/>
+        <rect x="20" y="20" width="70" height="80" rx="8" fill="#FFFFFF" stroke="#e0e0e0" stroke-width="1"/>
+        <text x="55" y="65" text-anchor="middle" font-size="9" fill="#999">Цагаан</text>
+        <rect x="110" y="20" width="70" height="80" rx="8" fill="#FFFDD0" stroke="#e0e0e0" stroke-width="1"/>
+        <text x="145" y="65" text-anchor="middle" font-size="9" fill="#999">Цөцгий</text>
+        <text x="100" y="12" text-anchor="middle" font-size="9" fill="#aaa">Нүүрний дэргэд аль нь илүү зохицох вэ?</text>
+      </svg>`,
       options: [
         { key: 'white' },
         { key: 'cream' },
@@ -33,6 +74,15 @@ const App = (() => {
     },
     {
       id: 'lipColor',
+      guide: `<svg viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="200" height="120" rx="12" fill="#FFF5F5"/>
+        <ellipse cx="50" cy="55" rx="18" ry="12" fill="#FFDAB9" stroke="#E8B89D" stroke-width="1"/>
+        <ellipse cx="100" cy="55" rx="18" ry="12" fill="#FFB6C1" stroke="#E8A0AB" stroke-width="1"/>
+        <ellipse cx="150" cy="55" rx="18" ry="12" fill="#8B2252" stroke="#6B1242" stroke-width="1"/>
+        <text x="50" y="85" text-anchor="middle" font-size="8" fill="#999">Тоор</text>
+        <text x="100" y="85" text-anchor="middle" font-size="8" fill="#999">Ягаан</text>
+        <text x="150" y="85" text-anchor="middle" font-size="8" fill="#ddd">Жимс</text>
+      </svg>`,
       options: [
         { key: 'peach', color: '#FFDAB9' },
         { key: 'pink', color: '#FFB6C1' },
@@ -42,6 +92,17 @@ const App = (() => {
     },
     {
       id: 'sunReaction',
+      guide: `<svg viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="200" height="120" rx="12" fill="#FFFDE7"/>
+        <circle cx="100" cy="30" r="18" fill="#FFD54F" stroke="#FFC107" stroke-width="1.5"/>
+        <line x1="100" y1="8" x2="100" y2="2" stroke="#FFC107" stroke-width="1.5"/>
+        <line x1="115" y1="15" x2="120" y2="10" stroke="#FFC107" stroke-width="1.5"/>
+        <line x1="85" y1="15" x2="80" y2="10" stroke="#FFC107" stroke-width="1.5"/>
+        <line x1="122" y1="30" x2="128" y2="30" stroke="#FFC107" stroke-width="1.5"/>
+        <line x1="78" y1="30" x2="72" y2="30" stroke="#FFC107" stroke-width="1.5"/>
+        <rect x="30" y="60" width="50" height="45" rx="6" fill="#FFCDD2"/><text x="55" y="87" text-anchor="middle" font-size="8" fill="#C62828">Шарддаг</text>
+        <rect x="120" y="60" width="50" height="45" rx="6" fill="#D7CCC8"/><text x="145" y="87" text-anchor="middle" font-size="8" fill="#5D4037">Бариздаг</text>
+      </svg>`,
       options: [
         { key: 'burn' },
         { key: 'tan' },
@@ -50,6 +111,15 @@ const App = (() => {
     },
     {
       id: 'contrastLevel',
+      guide: `<svg viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="200" height="120" rx="12" fill="#FAFAFA"/>
+        <circle cx="40" cy="45" r="20" fill="#D2B48C"/><rect x="25" y="20" width="30" height="15" rx="7" fill="#C4A882"/><circle cx="40" cy="42" r="3" fill="#8B7355"/>
+        <text x="40" y="85" text-anchor="middle" font-size="8" fill="#999">Бага</text>
+        <circle cx="100" cy="45" r="20" fill="#D2B48C"/><rect x="85" y="20" width="30" height="15" rx="7" fill="#5D4037"/><circle cx="100" cy="42" r="3" fill="#3E2723"/>
+        <text x="100" y="85" text-anchor="middle" font-size="8" fill="#999">Дунд</text>
+        <circle cx="160" cy="45" r="20" fill="#FFE0B2"/><rect x="145" y="20" width="30" height="15" rx="7" fill="#1a1a1a"/><circle cx="160" cy="42" r="3" fill="#1B5E20"/>
+        <text x="160" y="85" text-anchor="middle" font-size="8" fill="#999">Өндөр</text>
+      </svg>`,
       options: [
         { key: 'low' },
         { key: 'medium' },
